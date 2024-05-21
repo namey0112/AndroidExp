@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                 if (n == 0) {
                     msg = "Xóa dữ liệu thất bại";
                 } else {
-                    msg = "Bản ghi" + n + "xóa thành công";
+                    msg = "Xóa dữ liệu thành công";
                 }
                 Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                 dataLoad();
