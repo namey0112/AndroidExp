@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +23,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     EditText edtClassId, edtClassName, edtClassAttend;
@@ -149,6 +152,38 @@ public class MainActivity extends AppCompatActivity {
                 edtClassAttend.setText(mylist.get(position).split(" - ")[2]);
             }
         });
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // this function is called before text is edited
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // this function is called when text is edited
+                filterList(s.toString());
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                // this function is called after text is edited
+
+            }
+        };
+        edtClassId.addTextChangedListener(textWatcher);
+    }
+    private void filterList(String text) {
+        List<String> filteredList = new ArrayList<>();
+        for (String item : mylist) {
+            if (item.toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(item);
+            }
+        }
+        myAdapter.clear();
+        myAdapter.addAll(filteredList);
+        myAdapter.notifyDataSetChanged();
     }
     public void dataLoad() {
         mylist.clear();
