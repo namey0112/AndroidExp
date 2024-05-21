@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -122,6 +123,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                 dataLoad();
+            }
+        });
+        lvStudent.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                edtClassId.setText(mylist.get(position).split(" - ")[0]);
+                edtClassName.setText(mylist.get(position).split(" - ")[1]);
+                edtClassAttend.setText(mylist.get(position).split(" - ")[2]);
             }
         });
     }
