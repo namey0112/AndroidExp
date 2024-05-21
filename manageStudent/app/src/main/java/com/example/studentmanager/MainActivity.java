@@ -153,26 +153,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // this function is called before text is edited
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // this function is called when text is edited
-                filterList(s.toString());
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // this function is called after text is edited
-
-            }
-        };
-        edtClassId.addTextChangedListener(textWatcher);
+//        edtClassId.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                filterList(s.toString());
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//                filterList(s.toString());
+//            }
+//        });
     }
     private void filterList(String text) {
         List<String> filteredList = new ArrayList<>();
