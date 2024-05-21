@@ -61,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
         btnInsert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (checkIdExits()) {
+                    Toast.makeText(MainActivity.this, "Mã lớp đã tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String malop = edtClassId.getText().toString();
                 String tenlop = edtClassName.getText().toString();
                 int siso = Integer.parseInt(edtClassAttend.getText().toString());
@@ -94,8 +98,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         btnUpdate.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+                if (!checkIdExits()) {
+                    Toast.makeText(MainActivity.this, "Mã lớp không tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (checkRowExits()) {
+                    Toast.makeText(MainActivity.this, "Bản ghi đã tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 int siso = Integer.parseInt(edtClassAttend.getText().toString());
                 String malop = edtClassId.getText().toString();
                 ContentValues myValues = new ContentValues();
@@ -125,4 +138,33 @@ public class MainActivity extends AppCompatActivity {
         myCursor.close();
         myAdapter.notifyDataSetChanged();
     }
+    public boolean checkIdExits () {
+        String malop = edtClassId.getText().toString();
+        Cursor myCursor = myDB.query("tbllop", null, "malop=?", new String[]{malop}, null, null, null);
+        if (myCursor.getCount() > 0) {
+            myCursor.close();
+            return true;
+        } else {
+            myCursor.close();
+            return false;
+        }
+    }
+    public boolean checkRowExits() {
+        Cursor myCursor = myDB.query("tbllop", null, null, null, null, null, null);
+        myCursor.moveToNext();
+        String data = "";
+        while (!myCursor.isAfterLast()) {
+            data = myCursor.getString(0) + " - " + myCursor.getString(1) + " - " + myCursor.getString(2);
+            myCursor.moveToNext();
+            if (data.equals(edtClassId.getText().toString() + " - " + edtClassName.getText().toString() + " - " + edtClassAttend.getText().toString())) {
+                myCursor.close();
+                return true;
+            }
+        }
+        myCursor.close();
+        return false;
+    }
+
+
+
 }
