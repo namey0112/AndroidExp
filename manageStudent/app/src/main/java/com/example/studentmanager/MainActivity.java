@@ -66,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Mã lớp đã tồn tại", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (isEmty()) {
+                    Toast.makeText(MainActivity.this, "Bạn chưa nhập dữ liệu", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String malop = edtClassId.getText().toString();
                 String tenlop = edtClassName.getText().toString();
                 int siso = Integer.parseInt(edtClassAttend.getText().toString());
@@ -86,6 +90,14 @@ public class MainActivity extends AppCompatActivity {
         btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!checkIdExits()) {
+                    Toast.makeText(MainActivity.this, "Mã lớp không tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (isEmty()) {
+                    Toast.makeText(MainActivity.this, "Bạn chưa nhập dữ liệu", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 String malop = edtClassId.getText().toString();
                 int n = myDB.delete("tbllop", "malop=?", new String[]{malop});
                 String msg = "";
@@ -108,6 +120,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (checkRowExits()) {
                     Toast.makeText(MainActivity.this, "Bản ghi đã tồn tại", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (isEmty()) {
+                    Toast.makeText(MainActivity.this, "Bạn chưa nhập dữ liệu", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 int siso = Integer.parseInt(edtClassAttend.getText().toString());
@@ -173,7 +189,13 @@ public class MainActivity extends AppCompatActivity {
         myCursor.close();
         return false;
     }
-
+    public boolean isEmty() {
+        if (edtClassId.getText().toString().equals("") || edtClassName.getText().toString().equals("") || edtClassAttend.getText().toString().equals("")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 }
