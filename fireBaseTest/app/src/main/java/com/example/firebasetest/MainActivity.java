@@ -2,6 +2,7 @@ package com.example.firebasetest;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -87,14 +88,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 studentList.clear();
+                ArrayList<String> listStudent = new ArrayList<>();
                 for (DataSnapshot postSnapshot : snapshot.getChildren()) {
                     Student student = postSnapshot.getValue(Student.class);
                     studentList.add(student);
+
+                }
+                for (Student stu : studentList) {
+                    String name = stu.getName();
+                    String email = stu.getEmail();
+                    String display = "Name: " + name + " - Email: " + email;
+                    listStudent.add(display);
                 }
                 // Update ListView adapter here
-                StudentAdapter adapter = new StudentAdapter(MainActivity.this, studentList);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, listStudent);
                 listViewStudents.setAdapter(adapter);
-
                 listViewStudents.setOnItemClickListener((parent, view, position, id) -> {
                     selectedStudent = studentList.get(position);
                     editTextName.setText(selectedStudent.getName());
