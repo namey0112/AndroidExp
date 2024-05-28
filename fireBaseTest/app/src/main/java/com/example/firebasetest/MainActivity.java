@@ -124,30 +124,30 @@ public class MainActivity extends AppCompatActivity {
         String email = editTextEmail.getText().toString().trim();
 
         // Input validation (similar to addStudent)
-        if (name.isEmpty() || email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            // ... (Set error messages and request focus on invalid fields)
+        if (name.isEmpty()) {
+            editTextName.setError("Name is required");
+            editTextName.requestFocus();
+            return;
+        }
+
+        if (email.isEmpty()) {
+            editTextEmail.setError("Email is required");
+            editTextEmail.requestFocus();
+            return;
+        }
+
+        // Basic email format check (you can use a more robust regex for better validation)
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Invalid email address");
+            editTextEmail.requestFocus();
             return;
         }
 
         // Check for duplicates (only if email has changed)
         if (!email.equals(selectedStudent.getEmail())) {
-            databaseHelper.getReference().orderByChild("email").equalTo(email)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (!snapshot.exists()) {
-                                // Duplicate email found
-                                editTextEmail.setError("Email not exists");
-                                editTextEmail.requestFocus();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            // Handle database error
-                            Toast.makeText(MainActivity.this, "Failed to check for duplicates", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            editTextEmail.setError("Email already exists");
+            editTextEmail.requestFocus();
+            return;
         } else {
             // No email change, proceed with the update
             Student updatedStudent = new Student(selectedStudent.getId(), name, email);
