@@ -139,15 +139,6 @@ public class MainActivity extends AppCompatActivity {
                                 // Duplicate email found
                                 editTextEmail.setError("Email not exists");
                                 editTextEmail.requestFocus();
-                            } else {
-                                // No duplicate, proceed with adding
-                                String id = databaseHelper.getReference().push().getKey();
-                                Student student = new Student(id, name, email);
-                                databaseHelper.addStudent(student);
-
-                                editTextName.setText("");
-                                editTextEmail.setText("");
-                                Toast.makeText(MainActivity.this, "Student added successfully", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -169,8 +160,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     private void deleteStudent() {
-        String id = selectedStudent.getId();// get selected student id
-        databaseHelper.deleteStudent(id);
+        if (selectedStudent == null) {
+            Toast.makeText(this, "Please select a student to delete.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        databaseHelper.deleteStudent(selectedStudent.getId());
+
+        editTextName.setText("");
+        editTextEmail.setText("");
+        Toast.makeText(MainActivity.this, "Student deleted successfully", Toast.LENGTH_SHORT).show();
+        selectedStudent = null;
     }
     private void loadStudents() {
         databaseHelper.getReference().addValueEventListener(new ValueEventListener() {
