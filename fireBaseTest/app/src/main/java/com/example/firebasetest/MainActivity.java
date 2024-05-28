@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -26,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView listViewStudents;
     private List<Student> studentList;
     private FirebaseDatabaseHelper databaseHelper;
+    private Student selectedStudent;
+
 
 
     @Override
@@ -69,14 +72,14 @@ public class MainActivity extends AppCompatActivity {
         databaseHelper.addStudent(student);
     }
     private void updateStudent() {
-        String id ;
+        String id = selectedStudent.getId();
         String name = editTextName.getText().toString();
         String email = editTextEmail.getText().toString();
         Student student = new Student(id, name, email);
         databaseHelper.updateStudent(id, student);
     }
     private void deleteStudent() {
-        String id ;// get selected student id
+        String id = selectedStudent.getId();// get selected student id
         databaseHelper.deleteStudent(id);
     }
     private void loadStudents() {
@@ -91,11 +94,18 @@ public class MainActivity extends AppCompatActivity {
                 // Update ListView adapter here
                 StudentAdapter adapter = new StudentAdapter(MainActivity.this, studentList);
                 listViewStudents.setAdapter(adapter);
+
+                listViewStudents.setOnItemClickListener((parent, view, position, id) -> {
+                    selectedStudent = studentList.get(position);
+                    editTextName.setText(selectedStudent.getName());
+                    editTextEmail.setText(selectedStudent.getEmail());
+                });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 // Handle error
+                Toast.makeText(MainActivity.this, "Failed to load students", Toast.LENGTH_SHORT).show();
             }
 
         });
