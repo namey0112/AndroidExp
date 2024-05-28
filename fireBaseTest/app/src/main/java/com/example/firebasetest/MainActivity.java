@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Basic email format check (you can use a more robust regex for better validation)
+        // Basic email format check
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             editTextEmail.setError("Invalid email address");
             editTextEmail.requestFocus();
@@ -148,15 +148,18 @@ public class MainActivity extends AppCompatActivity {
             editTextEmail.setError("Email already exists");
             editTextEmail.requestFocus();
             return;
+        } else if(name.equals(selectedStudent.getName())){
+            editTextName.setError("Name already exists");
+            editTextName.requestFocus();
         } else {
-            // No email change, proceed with the update
             Student updatedStudent = new Student(selectedStudent.getId(), name, email);
             databaseHelper.updateStudent(selectedStudent.getId(), updatedStudent);
 
             editTextName.setText("");
             editTextEmail.setText("");
             Toast.makeText(MainActivity.this, "Student updated successfully", Toast.LENGTH_SHORT).show();
-            selectedStudent = null; // Clear selection after update
+            selectedStudent = null;
+
         }
     }
     private void deleteStudent() {
