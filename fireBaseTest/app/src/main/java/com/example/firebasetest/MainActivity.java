@@ -66,18 +66,107 @@ public class MainActivity extends AppCompatActivity {
         loadStudents();
     }
     private void addStudent() {
-        String name = editTextName.getText().toString();
-        String email = editTextEmail.getText().toString();
-        String id = databaseHelper.getReference().push().getKey();
-        Student student = new Student(id, name, email);
-        databaseHelper.addStudent(student);
+        String name = editTextName.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim();
+
+        if (name.isEmpty()) {
+            editTextName.setError("Name is required");
+            editTextName.requestFocus();
+            return;
+        }
+
+        if (email.isEmpty()) {
+            editTextEmail.setError("Email is required");
+            editTextEmail.requestFocus();
+            return;
+        }
+
+        // Basic email format check (you can use a more robust regex for better validation)
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            editTextEmail.setError("Invalid email address");
+            editTextEmail.requestFocus();
+            return;
+        }
+        databaseHelper.getReference().orderByChild("email").equalTo(email)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            // Duplicate email found
+                            editTextEmail.setError("Email already exists");
+                            editTextEmail.requestFocus();
+                        } else {
+                            // No duplicate, proceed with adding
+                            String id = databaseHelper.getReference().push().getKey();
+                            Student student = new Student(id, name, email);
+                            databaseHelper.addStudent(student);
+
+                            editTextName.setText("");
+                            editTextEmail.setText("");
+                            Toast.makeText(MainActivity.this, "Student added successfully", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        // Handle database error
+                        Toast.makeText(MainActivity.this, "Failed to check for duplicates", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
     private void updateStudent() {
-        String id = selectedStudent.getId();
-        String name = editTextName.getText().toString();
-        String email = editTextEmail.getText().toString();
-        Student student = new Student(id, name, email);
-        databaseHelper.updateStudent(id, student);
+        if (selectedStudent == null) {
+            Toast.makeText(this, "Please select a student to update.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String name = editTextName.getText().toString().trim();
+        String email = editTextEmail.getText().toString().trim();
+
+        // Input validation (similar to addStudent)
+        if (name.isEmpty() || email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            // ... (Set error messages and request focus on invalid fields)
+            return;
+        }
+
+        // Check for duplicates (only if email has changed)
+        if (!email.equals(selectedStudent.getEmail())) {
+            databaseHelper.getReference().orderByChild("email").equalTo(email)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (!snapshot.exists()) {
+                                // Duplicate email found
+                                editTextEmail.setError("Email not exists");
+                                editTextEmail.requestFocus();
+                            } else {
+                                // No duplicate, proceed with adding
+                                String id = databaseHelper.getReference().push().getKey();
+                                Student student = new Student(id, name, email);
+                                databaseHelper.addStudent(student);
+
+                                editTextName.setText("");
+                                editTextEmail.setText("");
+                                Toast.makeText(MainActivity.this, "Student added successfully", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            // Handle database error
+                            Toast.makeText(MainActivity.this, "Failed to check for duplicates", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            // No email change, proceed with the update
+            Student updatedStudent = new Student(selectedStudent.getId(), name, email);
+            databaseHelper.updateStudent(selectedStudent.getId(), updatedStudent);
+
+            editTextName.setText("");
+            editTextEmail.setText("");
+            Toast.makeText(MainActivity.this, "Student updated successfully", Toast.LENGTH_SHORT).show();
+            selectedStudent = null; // Clear selection after update
+        }
     }
     private void deleteStudent() {
         String id = selectedStudent.getId();// get selected student id
