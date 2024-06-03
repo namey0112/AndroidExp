@@ -145,9 +145,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Check for duplicates (only if email has changed)
         if (!email.equals(selectedStudent.getEmail())) {
-            editTextEmail.setError("Email already exists");
+            editTextEmail.setError("Email not exists");
             editTextEmail.requestFocus();
-            return;
         } else if(name.equals(selectedStudent.getName())){
             editTextName.setError("Name already exists");
             editTextName.requestFocus();
